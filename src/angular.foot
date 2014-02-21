@@ -1,0 +1,3 @@
+  angular.module([], 'okay')
+    .service('okay', Okay.Builder);
+})();

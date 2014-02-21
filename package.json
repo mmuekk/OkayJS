@@ -22,6 +22,7 @@
     "karma-requirejs": "^0.2.1",
     "karma-phantomjs-launcher": "^0.1.2",
     "karma": "^0.10.9",
-    "gulp-tsc": "^0.2.0"
+    "gulp-tsc": "^0.2.0",
+    "gulp-concat": "^2.1.7"
   }
 }

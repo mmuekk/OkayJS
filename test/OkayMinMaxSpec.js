@@ -1,4 +1,4 @@
-define(['release/okay'], function(okay) {
+define(['amd/okay'], function(okay) {
   describe('Okay.Min', function() {
 
     var Min = okay.Define({test: okay.Min(23)});

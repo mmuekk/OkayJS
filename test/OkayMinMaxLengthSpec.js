@@ -1,4 +1,4 @@
-define(['release/okay'], function(okay) {
+define(['amd/okay'], function(okay) {
   describe('Okay.MinLength', function() {
 
     var Length = okay.Define({test: okay.MinLength(4)});

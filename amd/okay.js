@@ -1,3 +1,4 @@
+define([], function() {
 var Okay;
 (function (Okay) {
     function extend(obj, withObj) {
@@ -273,3 +274,6 @@ var Okay;
     })();
     Okay.Builder = Builder;
 })(Okay || (Okay = {}));
+
+  return new Okay.Builder();
+});

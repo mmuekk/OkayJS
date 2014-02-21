@@ -1,4 +1,4 @@
-define(['release/okay'], function(okay) {
+define(['amd/okay'], function(okay) {
   describe('Okay.Custom', function() {
 
     function custom(value) {

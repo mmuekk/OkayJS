@@ -1,3 +1,5 @@
+(function(){
+
 var Okay;
 (function (Okay) {
     function extend(obj, withObj) {
@@ -273,3 +275,7 @@ var Okay;
     })();
     Okay.Builder = Builder;
 })(Okay || (Okay = {}));
+
+  angular.module([], 'okay')
+    .service('okay', Okay.Builder);
+})();

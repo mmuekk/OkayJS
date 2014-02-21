@@ -1,4 +1,4 @@
-define(['release/okay'], function(okay) {
+define(['amd/okay'], function(okay) {
   describe('Okay.IsDate', function() {
 
     var Default = okay.Define({test: okay.IsDate()});
