@@ -5,7 +5,7 @@ var typescript = require('gulp-tsc');
 
 gulp.task('compile', function() {
   gulp.src(['src/okay.ts'])
-    .pipe(typescript({out: 'okay.js', module: 'AMD', target: 'ES5'}))
+    .pipe(typescript({out: 'okay.js', module: 'AMD', target: 'ES5', declaration: true}))
     .pipe(gulp.dest('release'));
 });
 

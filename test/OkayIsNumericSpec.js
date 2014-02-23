@@ -1,7 +1,7 @@
 define(['amd/okay'], function(okay) {
   describe('Okay.IsNumeric', function() {
 
-    var Default = okay.Define({test: okay.IsNumeric()});
+    var Default = okay.defineWrapper({test: okay.IsNumeric()});
 
     it('should give error when field is not a number', function() {
       var target = new Default({test: 'A'});

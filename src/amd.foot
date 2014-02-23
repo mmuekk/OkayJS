@@ -1,2 +1,2 @@
-  return new Okay.Builder();
+  return new OkayJS.Okay();
 });

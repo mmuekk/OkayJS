@@ -1,7 +1,28 @@
 define(['amd/okay'], function(okay) {
+  describe('Okay.Length', function() {
+    var Length = okay.defineWrapper({test: okay.Length(4)});
+
+    it('should give error when field is shorter than length', function() {
+      var target = new Length({test: 'ABC'});
+      expect(target.test.error).toEqual("Length");
+      expect(target.test.message).toEqual("must be 4 characters");
+    });
+
+    it('should give error when field is longer than length', function() {
+      var target = new Length({test: 'ABCDE'});
+      expect(target.test.error).toEqual("Length");
+      expect(target.test.message).toEqual("must be 4 characters");
+    });
+
+    it ('should not give error when field is equal to length', function() {
+      var target = new Length({test: 'ABCD'});
+      expect(target.test).not.toBeDefined();
+    });
+  });
+
   describe('Okay.MinLength', function() {
 
-    var Length = okay.Define({test: okay.MinLength(4)});
+    var Length = okay.defineWrapper({test: okay.MinLength(4)});
 
     it('should give error when field is shorter than min length', function() {
       var target = new Length({test: ''});
@@ -22,7 +43,7 @@ define(['amd/okay'], function(okay) {
 
   describe('Okay.MaxLength', function() {
 
-    var Length = okay.Define({test: okay.MaxLength(4)});
+    var Length = okay.defineWrapper({test: okay.MaxLength(4)});
 
     it('should give error when field is more than value', function() {
       var target = new Length({test: 'ABCDEFG'});
@@ -43,7 +64,7 @@ define(['amd/okay'], function(okay) {
 
   describe('Okay.MinMaxLength', function() {
 
-    var Length = okay.Define({test: okay.MinMaxLength(4, 8)});
+    var Length = okay.defineWrapper({test: okay.MinMaxLength(4, 8)});
 
     it('should give error when field is shorter than min value', function() {
       var target = new Length({test: 'ABC'});

@@ -1,3 +1,7 @@
-  angular.module([], 'okay')
-    .service('okay', Okay.Builder);
+  var _config;
+  angular.module('okay', [])
+    .provider('okay', {
+      setDefaults: function(config) { _config = config; },
+      $get: function() { return new OkayJS.Okay(_config); }
+    });
 })();

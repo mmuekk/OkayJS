@@ -1,7 +1,7 @@
 define(['amd/okay'], function(okay) {
   describe('Okay.Min', function() {
 
-    var Min = okay.Define({test: okay.Min(23)});
+    var Min = okay.defineWrapper({test: okay.Min(23)});
 
     it('should give error when field is less than value', function() {
       var target = new Min({test: 0});
@@ -22,7 +22,7 @@ define(['amd/okay'], function(okay) {
 
   describe('Okay.Max', function() {
 
-    var Max = okay.Define({test: okay.Max(42)});
+    var Max = okay.defineWrapper({test: okay.Max(42)});
 
     it('should give error when field is more than value', function() {
       var target = new Max({test: 43});
@@ -43,7 +43,7 @@ define(['amd/okay'], function(okay) {
 
   describe('Okay.MinMax', function() {
 
-    var MinMax = okay.Define({test: okay.MinMax(23, 42)});
+    var MinMax = okay.defineWrapper({test: okay.MinMax(23, 42)});
 
     it('should give error when field is less than min value', function() {
       var target = new MinMax({test: 0});
@@ -80,7 +80,7 @@ define(['amd/okay'], function(okay) {
 
   describe('Okay.Min Date', function() {
 
-    var Min = okay.Define({test: okay.Min(new Date('2014-02-21'))});
+    var Min = okay.defineWrapper({test: okay.Min(new Date('2014-02-21'))});
 
     it('should give error when field is less than value', function() {
       var target = new Min({test: '2014-02-20'});
@@ -101,7 +101,7 @@ define(['amd/okay'], function(okay) {
 
   describe('Okay.Max Date', function() {
 
-    var Max = okay.Define({test: okay.Max(new Date('2014-02-21'))});
+    var Max = okay.defineWrapper({test: okay.Max(new Date('2014-02-21'))});
 
     it('should give error when field is more than value', function() {
       var target = new Max({test: '2015-01-01'});
@@ -122,7 +122,7 @@ define(['amd/okay'], function(okay) {
 
   describe('Okay.MinMax', function() {
 
-    var MinMax = okay.Define({test: okay.MinMax(new Date('2014-01-01'), new Date('2014-12-31'))});
+    var MinMax = okay.defineWrapper({test: okay.MinMax(new Date('2014-01-01'), new Date('2014-12-31'))});
 
     it('should give error when field is less than min value', function() {
       var target = new MinMax({test: '2000-01-01'});

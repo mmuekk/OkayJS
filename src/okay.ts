@@ -1,4 +1,4 @@
-module Okay {
+module OkayJS {
   export interface IError {
     error: string;
     message: string;
@@ -16,6 +16,7 @@ module Okay {
     minDateMsg?: string;
     maxDateMsg?: string;
     minMaxDateMsg?: string;
+    lengthMsg?: string;
     minLengthMsg?: string;
     maxLengthMsg?: string;
     minMaxLengthMsg?: string;
@@ -83,6 +84,7 @@ module Okay {
     minDateMsg: "must be no earlier than {min}",
     maxDateMsg: "must be no later than {max}",
     minMaxDateMsg: "must be between {min} and {max}",
+    lengthMsg: "must be {length} characters",
     minLengthMsg: "must be at least {min} characters",
     maxLengthMsg: "must be no more than {max} characters",
     minMaxLengthMsg: "must be between {min} and {max} characters",
@@ -90,7 +92,7 @@ module Okay {
     formatDate: formatDate
   };
 
-  export class Builder {
+  export class Okay {
     private _config: IConfig;
 
     constructor(config?: IConfig) {
@@ -121,6 +123,10 @@ module Okay {
       return this._config.minMaxNumberMsg.replace('{min}', this._config.formatDate(min)).replace('{max}', this._config.formatDate(max));
     }
 
+    private lengthMsg(length: number) {
+      return this._config.lengthMsg.replace('{length}', length.toString());
+    }
+
     private minLengthMsg(min: number) {
       return this._config.minLengthMsg.replace('{min}', min.toString());
     }
@@ -133,7 +139,7 @@ module Okay {
       return this._config.minMaxLengthMsg.replace('{min}', min.toString()).replace('{max}', max.toString());
     }
 
-    public Define(rules: any) {
+    public defineWrapper(rules: any) {
       function Validator(target: any) {
         this.target = target;
       }
@@ -152,16 +158,18 @@ module Okay {
       return Validator;
     }
 
-    public Required(unvalues?: any[], message?: string) {
+    public wrap(obj: any, rules: any) {
+      var wrapper = this.defineWrapper(rules);
+      return new wrapper(obj);
+    }
+
+    public Required(message?: string) {
       var error = {
         error: "Required",
         message: message || this._config.requiredMsg
       };
       return (value: any) => {
-        if (typeof value === "undefined") {
-          return error;
-        }
-        if (unvalues && unvalues.indexOf(value) > -1) {
+        if (typeof value === "undefined" || value === null || value.toString() === '') {
           return error;
         }
         return undefined;
@@ -220,6 +228,14 @@ module Okay {
           return (value < min || value > max) ? error : undefined;
         }
       }
+    }
+
+    public Length(length: number, message?: string) {
+      var error = {
+        error: "Length",
+        message: message || this.lengthMsg(length)
+      };
+      return (value: any) => value.toString().length !== length ? error : undefined;
     }
 
     public MinLength(min: number, message?: string) {

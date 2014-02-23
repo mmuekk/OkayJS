@@ -1,8 +1,7 @@
 define(['amd/okay'], function(okay) {
   describe('Okay.Required', function() {
 
-    var Default = okay.Define({test: okay.Required()});
-    var WithNullAndEmptyString = okay.Define({test: okay.Required([null, ''])});
+    var Default = okay.defineWrapper({test: okay.Required()});
 
     it('should give error when field is undefined', function() {
       var target = new Default({});
@@ -16,13 +15,13 @@ define(['amd/okay'], function(okay) {
     });
 
     it('should give error when field is null', function() {
-      var target = new WithNullAndEmptyString({test: null});
+      var target = new Default({test: null});
       expect(target.test.error).toEqual('Required');
       expect(target.test.message).toEqual("is required");
     });
 
     it('should give error when field is empty', function() {
-      var target = new WithNullAndEmptyString({test: ''});
+      var target = new Default({test: ''});
       expect(target.test.error).toEqual('Required');
       expect(target.test.message).toEqual("is required");
     });

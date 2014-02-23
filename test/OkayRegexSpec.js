@@ -1,7 +1,7 @@
 define(['amd/okay'], function(okay) {
   describe('Okay.Regex', function() {
 
-    var Default = okay.Define({test: okay.Regex(/^[YN]$/)});
+    var Default = okay.defineWrapper({test: okay.Regex(/^[YN]$/)});
 
     it('should give error when field does not match expression', function() {
       var target = new Default({test: 'A'});

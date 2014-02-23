@@ -5,7 +5,7 @@ define(['amd/okay'], function(okay) {
       return value === 'Pass';
     }
 
-    var Default = okay.Define({test: okay.Custom(custom)});
+    var Default = okay.defineWrapper({test: okay.Custom(custom)});
 
     it('should give error when custom function returns false', function() {
       var target = new Default({test: 'Fail'});
