@@ -65,58 +65,71 @@ var OkayJS;
         minLengthMsg: "must be at least {min} characters",
         maxLengthMsg: "must be no more than {max} characters",
         minMaxLengthMsg: "must be between {min} and {max} characters",
-        parseDate: Date.parse,
+        parseDate: function (s) {
+            return new Date(Date.parse(s));
+        },
         formatDate: formatDate
     };
+
+    function minNumberMsg(min, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.minNumberMsg.replace('{min}', min.toString());
+    }
+
+    function maxNumberMsg(max, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.maxNumberMsg.replace('{max}', max.toString());
+    }
+
+    function minMaxNumberMsg(min, max, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.minMaxNumberMsg.replace('{min}', min.toString()).replace('{max}', max.toString());
+    }
+
+    function minDateMsg(min, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.minDateMsg.replace('{min}', config.formatDate(min));
+    }
+
+    function maxDateMsg(max, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.maxDateMsg.replace('{max}', config.formatDate(max));
+    }
+
+    function minMaxDateMsg(min, max, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.minMaxNumberMsg.replace('{min}', config.formatDate(min)).replace('{max}', config.formatDate(max));
+    }
+
+    function lengthMsg(length, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.lengthMsg.replace('{length}', length.toString());
+    }
+
+    function minLengthMsg(min, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.minLengthMsg.replace('{min}', min.toString());
+    }
+
+    function maxLengthMsg(max, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.maxLengthMsg.replace('{max}', max.toString());
+    }
+
+    function minMaxLengthMsg(min, max, config) {
+        if (typeof config === "undefined") { config = defaultConfig; }
+        return config.minMaxLengthMsg.replace('{min}', min.toString()).replace('{max}', max.toString());
+    }
 
     var Okay = (function () {
         function Okay(config) {
             this._config = config ? extend(config, defaultConfig) : defaultConfig;
         }
-        Okay.prototype.minNumberMsg = function (min) {
-            return this._config.minNumberMsg.replace('{min}', min.toString());
-        };
-
-        Okay.prototype.maxNumberMsg = function (max) {
-            return this._config.maxNumberMsg.replace('{max}', max.toString());
-        };
-
-        Okay.prototype.minMaxNumberMsg = function (min, max) {
-            return this._config.minMaxNumberMsg.replace('{min}', min.toString()).replace('{max}', max.toString());
-        };
-
-        Okay.prototype.minDateMsg = function (min) {
-            return this._config.minDateMsg.replace('{min}', this._config.formatDate(min));
-        };
-
-        Okay.prototype.maxDateMsg = function (max) {
-            return this._config.maxDateMsg.replace('{max}', this._config.formatDate(max));
-        };
-
-        Okay.prototype.minMaxDateMsg = function (min, max) {
-            return this._config.minMaxNumberMsg.replace('{min}', this._config.formatDate(min)).replace('{max}', this._config.formatDate(max));
-        };
-
-        Okay.prototype.lengthMsg = function (length) {
-            return this._config.lengthMsg.replace('{length}', length.toString());
-        };
-
-        Okay.prototype.minLengthMsg = function (min) {
-            return this._config.minLengthMsg.replace('{min}', min.toString());
-        };
-
-        Okay.prototype.maxLengthMsg = function (max) {
-            return this._config.maxLengthMsg.replace('{max}', max.toString());
-        };
-
-        Okay.prototype.minMaxLengthMsg = function (min, max) {
-            return this._config.minMaxLengthMsg.replace('{min}', min.toString()).replace('{max}', max.toString());
-        };
-
         Okay.prototype.defineWrapper = function (rules) {
             function Validator(target) {
                 this.target = target;
             }
+            var keys = [];
             for (var key in rules) {
                 if (!rules.hasOwnProperty(key)) {
                     continue;
@@ -128,7 +141,16 @@ var OkayJS;
                 } else {
                     defineSingleRuleProperty(Validator, key, keyRules);
                 }
+                keys.push(key);
             }
+            Validator.prototype.any = function () {
+                for (var i = 0; i < keys.length; i++) {
+                    if (this[keys[i]]) {
+                        return true;
+                    }
+                }
+                return false;
+            };
             return Validator;
         };
 
@@ -167,12 +189,12 @@ var OkayJS;
             var _this = this;
             var error = { error: 'Min', message: '' };
             if (typeof min === 'number') {
-                error.message = message || this.minNumberMsg(min);
+                error.message = message || minNumberMsg(min, this._config);
                 return function (value) {
                     return (Number(value) < min) ? error : undefined;
                 };
             } else if (min.constructor.name === 'Date') {
-                error.message = message || this.minDateMsg(min);
+                error.message = message || minDateMsg(min, this._config);
                 return function (value) {
                     return (_this._config.parseDate(value) < min) ? error : undefined;
                 };
@@ -184,12 +206,12 @@ var OkayJS;
             var _this = this;
             var error = { error: 'Max', message: '' };
             if (typeof max === 'number') {
-                error.message = message || this.maxNumberMsg(max);
+                error.message = message || maxNumberMsg(max, this._config);
                 return function (value) {
                     return (Number(value) > max) ? error : undefined;
                 };
             } else if (max.constructor.name === 'Date') {
-                error.message = message || this.maxDateMsg(max);
+                error.message = message || maxDateMsg(max, this._config);
                 return function (value) {
                     return (_this._config.parseDate(value) > max) ? error : undefined;
                 };
@@ -201,13 +223,13 @@ var OkayJS;
             var _this = this;
             var error = { error: 'MinMax', message: '' };
             if (typeof min === 'number' && typeof max === 'number') {
-                error.message = message || this.minMaxNumberMsg(min, max);
+                error.message = message || minMaxNumberMsg(min, max, this._config);
                 return function (value) {
                     value = Number(value);
                     return (value < min || value > max) ? error : undefined;
                 };
             } else if (min.constructor.name === 'Date' && max.constructor.name === 'Date') {
-                error.message = message || this.minMaxDateMsg(min, max);
+                error.message = message || minMaxDateMsg(min, max, this._config);
                 return function (value) {
                     value = _this._config.parseDate(value);
                     return (value < min || value > max) ? error : undefined;
@@ -218,7 +240,7 @@ var OkayJS;
         Okay.prototype.Length = function (length, message) {
             var error = {
                 error: "Length",
-                message: message || this.lengthMsg(length)
+                message: message || lengthMsg(length, this._config)
             };
             return function (value) {
                 return value.toString().length !== length ? error : undefined;
@@ -228,7 +250,7 @@ var OkayJS;
         Okay.prototype.MinLength = function (min, message) {
             var error = {
                 error: "MinLength",
-                message: message || this.minLengthMsg(min)
+                message: message || minLengthMsg(min, this._config)
             };
             return function (value) {
                 return value.toString().length < min ? error : undefined;
@@ -238,7 +260,7 @@ var OkayJS;
         Okay.prototype.MaxLength = function (max, message) {
             var error = {
                 error: "MaxLength",
-                message: message || this.maxLengthMsg(max)
+                message: message || maxLengthMsg(max, this._config)
             };
             return function (value) {
                 return value.toString().length > max ? error : undefined;
@@ -248,7 +270,7 @@ var OkayJS;
         Okay.prototype.MinMaxLength = function (min, max, message) {
             var error = {
                 error: "MinMaxLength",
-                message: message || this.minMaxLengthMsg(min, max)
+                message: message || minMaxLengthMsg(min, max, this._config)
             };
             return function (value) {
                 value = value.toString();

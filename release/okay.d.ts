@@ -25,16 +25,6 @@ declare module OkayJS {
     class Okay {
         private _config;
         constructor(config?: IConfig);
-        private minNumberMsg(min);
-        private maxNumberMsg(max);
-        private minMaxNumberMsg(min, max);
-        private minDateMsg(min);
-        private maxDateMsg(max);
-        private minMaxDateMsg(min, max);
-        private lengthMsg(length);
-        private minLengthMsg(min);
-        private maxLengthMsg(max);
-        private minMaxLengthMsg(min, max);
         public defineWrapper(rules: any): (target: any) => void;
         public wrap(obj: any, rules: any): any;
         public Required(message?: string): (value: any) => {

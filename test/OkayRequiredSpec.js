@@ -5,12 +5,14 @@ define(['amd/okay'], function(okay) {
 
     it('should give error when field is undefined', function() {
       var target = new Default({});
+      expect(target.any()).toBeTruthy();
       expect(target.test.error).toEqual('Required');
       expect(target.test.message).toEqual("is required");
     });
 
     it ('should not give error when field has value', function() {
       var target = new Default({test: "Alice"});
+      expect(target.any()).toBeFalsy();
       expect(target.test).not.toBeDefined();
     });
 

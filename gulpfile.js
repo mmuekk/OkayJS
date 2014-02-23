@@ -3,8 +3,8 @@ var gutil = require('gulp-util');
 var concat = require('gulp-concat');
 var typescript = require('gulp-tsc');
 
-gulp.task('compile', function() {
-  gulp.src(['src/okay.ts'])
+gulp.task('compile', function(cb) {
+  return gulp.src(['src/okay.ts'])
     .pipe(typescript({out: 'okay.js', module: 'AMD', target: 'ES5', declaration: true}))
     .pipe(gulp.dest('release'));
 });
@@ -27,6 +27,10 @@ gulp.task('angular', ['compile'], function() {
     .pipe(gulp.dest('angular'));
 });
 
+gulp.task('watch', function() {
+  gulp.watch('src/okay.ts', ['default']);
+});
+
 gulp.task('default', function() {
-  gulp.watch('src/okay.ts', ['compile', 'amd', 'commonjs', 'angular']);
+  gulp.start('compile', 'amd', 'commonjs', 'angular');
 });
