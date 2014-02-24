@@ -50,7 +50,7 @@ require(['okay'], function(okay) {
 
   person.age = 'None of your business';
 
-  // personErrors.age == { error: 'Number', message: 'is not a numeric value' }
+  // personErrors.age == { error: 'IsNumeric', message: 'is not a numeric value' }
 
 }); 
 ```
