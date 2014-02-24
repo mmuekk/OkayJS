@@ -125,6 +125,18 @@ var OkayJS;
         function Okay(config) {
             this._config = config ? extend(config, defaultConfig) : defaultConfig;
         }
+        Okay.prototype.configureDefaults = function (config) {
+            for (var key in config) {
+                if (config.hasOwnProperty(key) && typeof config[key] !== undefined) {
+                    defaultConfig[key] = config[key];
+                }
+            }
+        };
+
+        Okay.prototype.withConfig = function (config) {
+            return new Okay(config);
+        };
+
         Okay.prototype.defineWrapper = function (rules) {
             function Validator(target) {
                 this.target = target;
@@ -134,7 +146,6 @@ var OkayJS;
                 if (!rules.hasOwnProperty(key)) {
                     continue;
                 }
-
                 var keyRules = rules[key];
                 if (isArray(keyRules)) {
                     defineMultiRuleProperty(Validator, key, keyRules);
@@ -143,6 +154,7 @@ var OkayJS;
                 }
                 keys.push(key);
             }
+
             Validator.prototype.any = function () {
                 for (var i = 0; i < keys.length; i++) {
                     if (this[keys[i]]) {
@@ -150,6 +162,21 @@ var OkayJS;
                     }
                 }
                 return false;
+            };
+
+            Validator.prototype.errors = function () {
+                var errors = {};
+                for (var i = 0; i < keys.length; i++) {
+                    if (this[keys[i]]) {
+                        errors[key] = this[keys[i]];
+                    }
+                }
+                return errors;
+            };
+
+            Validator.check = function (obj) {
+                var wrapper = new Validator(obj);
+                return wrapper.errors();
             };
             return Validator;
         };

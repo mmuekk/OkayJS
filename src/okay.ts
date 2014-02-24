@@ -4,6 +4,10 @@ module OkayJS {
     message: string;
   }
 
+  export interface IErrors {
+    [key: string]: IError;
+  }
+
   export interface IConfig {
     requiredMsg?: string;
     regexMsg?: string;
@@ -22,6 +26,13 @@ module OkayJS {
     minMaxLengthMsg?: string;
     parseDate?: (s: string) => Date;
     formatDate?: (d: Date) => string;
+  }
+
+  export declare class Wrapper {
+    constructor(obj: any);
+    any(): boolean;
+    errors(): IErrors;
+    static check(obj: any): IErrors;
   }
 
   function extend(obj: any, withObj: any) {
@@ -139,7 +150,19 @@ module OkayJS {
       this._config = config ? extend(config, defaultConfig) : defaultConfig;
     }
 
-    public defineWrapper(rules: any) {
+    public configureDefaults(config: IConfig) {
+      for (var key in config){
+        if (config.hasOwnProperty(key) && typeof config[key] !== undefined) {
+          defaultConfig[key] = config[key];
+        }
+      }
+    }
+
+    public withConfig(config: IConfig) {
+      return new Okay(config);
+    }
+
+    public defineWrapper(rules: any) : typeof Wrapper {
       function Validator(target: any) {
         this.target = target;
       }
@@ -148,7 +171,6 @@ module OkayJS {
         if (!rules.hasOwnProperty(key)) {
           continue;
         }
-
         var keyRules = rules[key];
         if (isArray(keyRules)) {
           defineMultiRuleProperty(Validator, key, keyRules);
@@ -157,6 +179,7 @@ module OkayJS {
         }
         keys.push(key);
       }
+
       Validator.prototype.any = function() {
         for (var i = 0; i < keys.length; i++) {
           if (this[keys[i]]) {
@@ -165,7 +188,22 @@ module OkayJS {
         }
         return false;
       };
-      return Validator;
+
+      Validator.prototype.errors = function() {
+        var errors = {};
+        for (var i = 0; i < keys.length; i++) {
+          if (this[keys[i]]) {
+            errors[key] = this[keys[i]];
+          }
+        }
+        return errors;
+      };
+
+      (<any>Validator).check = function(obj: any) {
+        var wrapper = new Validator(obj);
+        return wrapper.errors();
+      }
+      return <typeof Wrapper><any>Validator;
     }
 
     public wrap(obj: any, rules: any) {
@@ -174,7 +212,7 @@ module OkayJS {
     }
 
     public Required(message?: string) {
-      var error = {
+      var error: IError = {
         error: "Required",
         message: message || this._config.requiredMsg
       };
@@ -187,7 +225,7 @@ module OkayJS {
     }
 
     public Regex(expression: RegExp, message?: string) {
-      var error = {
+      var error: IError = {
         error: "Regex",
         message: message || this._config.regexMsg
       };
@@ -200,7 +238,7 @@ module OkayJS {
     }
 
     public Min(min: any, message?: string) {
-      var error = {error: 'Min', message: ''};
+      var error: IError = {error: 'Min', message: ''};
       if (typeof min === 'number') {
         error.message = message || minNumberMsg(min, this._config);
         return (value: any) => (Number(value) < min) ? error : undefined;
@@ -212,7 +250,7 @@ module OkayJS {
     }
 
     public Max(max: any, message?: string) {
-      var error = {error: 'Max', message: ''};
+      var error: IError = {error: 'Max', message: ''};
       if (typeof max === 'number') {
         error.message = message || maxNumberMsg(max, this._config);
         return (value: any) => (Number(value) > max) ? error : undefined;
@@ -224,7 +262,7 @@ module OkayJS {
     }
 
     public MinMax(min: any, max: any, message?: string) {
-      var error = {error: 'MinMax', message: ''};
+      var error: IError = {error: 'MinMax', message: ''};
       if (typeof min === 'number' && typeof max === 'number') {
         error.message = message || minMaxNumberMsg(min, max, this._config);
         return (value: any) => {
@@ -241,7 +279,7 @@ module OkayJS {
     }
 
     public Length(length: number, message?: string) {
-      var error = {
+      var error: IError = {
         error: "Length",
         message: message || lengthMsg(length, this._config)
       };
@@ -249,7 +287,7 @@ module OkayJS {
     }
 
     public MinLength(min: number, message?: string) {
-      var error = {
+      var error: IError = {
         error: "MinLength",
         message: message || minLengthMsg(min, this._config)
       };
@@ -257,7 +295,7 @@ module OkayJS {
     }
 
     public MaxLength(max: number, message?: string) {
-      var error = {
+      var error: IError = {
         error: "MaxLength",
         message: message || maxLengthMsg(max, this._config)
       };
@@ -265,7 +303,7 @@ module OkayJS {
     }
 
     public MinMaxLength(min: number, max: number, message?: string) {
-      var error = {
+      var error: IError = {
         error: "MinMaxLength",
         message: message || minMaxLengthMsg(min, max, this._config)
       };
@@ -276,7 +314,7 @@ module OkayJS {
     }
 
     public IsNumeric(message?: string) {
-      var error = {
+      var error: IError = {
         error: "IsNumeric",
         message: message || this._config.isNumericMsg
       };
@@ -284,20 +322,22 @@ module OkayJS {
     }
 
     public IsDate(message?: string) {
-      var error = {
+      var error: IError = {
         error: "IsDate",
         message: message || this._config.isDateMsg
       };
       return (value: any) => isNaN(<any>this._config.parseDate(value)) ? error : undefined;
     }
 
-    public Custom(fn: (value: any) => boolean, error?: IError) {
+    public Custom(fn: (value: any) => boolean, error?: IError) : (value: any) => IError;
+    public Custom(fn: (value: any) => Function, error?: IError) : (value: any) => IError;
+    public Custom(fn: (value: any) => any, error?: IError) {
       if (!error) {
         error = {error: "Custom", message: this._config.customMsg};
       } else if (!error.message) {
         error.message = this._config.customMsg;
       }
-      return (value: any) => !fn(value) ? error : undefined;
+      return (value: any) : IError => !fn(value) ? error : undefined;
     }
   }
 }

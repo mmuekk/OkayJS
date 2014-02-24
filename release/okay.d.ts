@@ -3,6 +3,9 @@ declare module OkayJS {
         error: string;
         message: string;
     }
+    interface IErrors {
+        [key: string]: IError;
+    }
     interface IConfig {
         requiredMsg?: string;
         regexMsg?: string;
@@ -22,55 +25,31 @@ declare module OkayJS {
         parseDate?: (s: string) => Date;
         formatDate?: (d: Date) => string;
     }
+    class Wrapper {
+        constructor(obj: any);
+        public any(): boolean;
+        public errors(): IErrors;
+        static check(obj: any): IErrors;
+    }
     class Okay {
         private _config;
         constructor(config?: IConfig);
-        public defineWrapper(rules: any): (target: any) => void;
-        public wrap(obj: any, rules: any): any;
-        public Required(message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public Regex(expression: RegExp, message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public Min(min: any, message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public Max(max: any, message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public MinMax(min: any, max: any, message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public Length(length: number, message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public MinLength(min: number, message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public MaxLength(max: number, message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public MinMaxLength(min: number, max: number, message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public IsNumeric(message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
-        public IsDate(message?: string): (value: any) => {
-            error: string;
-            message: string;
-        };
+        public configureDefaults(config: IConfig): void;
+        public withConfig(config: IConfig): Okay;
+        public defineWrapper(rules: any): typeof Wrapper;
+        public wrap(obj: any, rules: any): Wrapper;
+        public Required(message?: string): (value: any) => IError;
+        public Regex(expression: RegExp, message?: string): (value: any) => IError;
+        public Min(min: any, message?: string): (value: any) => IError;
+        public Max(max: any, message?: string): (value: any) => IError;
+        public MinMax(min: any, max: any, message?: string): (value: any) => IError;
+        public Length(length: number, message?: string): (value: any) => IError;
+        public MinLength(min: number, message?: string): (value: any) => IError;
+        public MaxLength(max: number, message?: string): (value: any) => IError;
+        public MinMaxLength(min: number, max: number, message?: string): (value: any) => IError;
+        public IsNumeric(message?: string): (value: any) => IError;
+        public IsDate(message?: string): (value: any) => IError;
         public Custom(fn: (value: any) => boolean, error?: IError): (value: any) => IError;
+        public Custom(fn: (value: any) => Function, error?: IError): (value: any) => IError;
     }
 }
