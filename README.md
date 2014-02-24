@@ -37,7 +37,7 @@ require(['okay'], function(okay) {
   var person = {};
   var personErrors = okay.wrap(person, {
     name: okay.Required(),
-    age: [okay.Required(), okay.Number()]
+    age: [okay.Required(), okay.IsNumeric()]
   });
 
   // personErrors.name == { error: 'Required', message: 'is required' }
