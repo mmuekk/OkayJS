@@ -37,7 +37,7 @@ require(['okay'], function(okay) {
   var person = {};
   var personErrors = okay.wrap(person, {
     name: okay.Required(),
-    age: [okay.Required(), okay.Number()]
+    age: [okay.Required(), okay.IsNumeric()]
   });
 
   // personErrors.name == { error: 'Required', message: 'is required' }
@@ -50,7 +50,7 @@ require(['okay'], function(okay) {
 
   person.age = 'None of your business';
 
-  // personErrors.age == { error: 'Number', message: 'is not a numeric value' }
+  // personErrors.age == { error: 'IsNumeric', message: 'is not a numeric value' }
 
 }); 
 ```
